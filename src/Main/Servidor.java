@@ -17,6 +17,7 @@ public class Servidor {
                     ipServidor, puertoServidor, path, nombre);
             Thread hilo = new Thread(s);
             hilo.start();
+            s.iniciarServidorCompartirArchivo();
         }
     }
 }

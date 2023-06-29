@@ -48,9 +48,9 @@ public class ServidorImp implements Runnable{
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
             objectOutputStream.writeObject("Servidor");
             //System.out.println("Cliente conectado: " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-            String ipCliente = socket.getInetAddress().getHostAddress();
-            int puertoCliente = socket.getPort();
-            ServerInfo data = new ServerInfo(ipCliente, puertoCliente, "path", "nombre");
+            //String ipCliente = socket.getInetAddress().getHostAddress();
+            //int puertoCliente = socket.getPort();
+            ServerInfo data = new ServerInfo(ipServidor, puertoServidor, "path", "nombre");
             System.out.println("Mandado la data a la lista....");
             System.out.println(data);
             objectOutputStream.writeObject(data);
@@ -81,9 +81,9 @@ public class ServidorImp implements Runnable{
             //Cantidad de solicitudes que soporta el servidor central
             int max = 1000;
             //Declaracion de la red ip, se le pasara al socket
-            InetAddress ipAdd = InetAddress.getByName(getIpServidor());
+            InetAddress ipAdd = InetAddress.getByName(ipServidor);
             //Se inicaliza y se hace instancia de un servidor socket, se le pasa el puerto, max solicitudes, y la direccion ip
-            ServerSocket serverSocket = new ServerSocket(getPuertoServidor(), max, ipAdd);
+            ServerSocket serverSocket = new ServerSocket(puertoServidor, max, ipAdd);
             System.out.println("Servidor iniciado. Esperando conexiones en el puerto " + getIpServidor());
 
             //Bucle infinito de las solicitudes aceptadas
