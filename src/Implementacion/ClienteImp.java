@@ -1,8 +1,6 @@
 package Implementacion;
 
-
 import Model.ServerInfo;
-
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,6 +16,8 @@ public class ClienteImp{
     private int puerto;
     private List<ServerInfo> serverInfos;
 
+    private String path;
+
     public ClienteImp() {
         serverInfos = new ArrayList<>();
     }
@@ -25,6 +25,13 @@ public class ClienteImp{
     public ClienteImp(String servidorIp, int puerto) {
         this.servidorIp = servidorIp;
         this.puerto = puerto;
+        serverInfos = new ArrayList<>();
+    }
+
+    public ClienteImp(String servidorIp, int puerto, String path) {
+        this.servidorIp = servidorIp;
+        this.puerto = puerto;
+        this.path = path;
         serverInfos = new ArrayList<>();
     }
 
@@ -71,10 +78,30 @@ public class ClienteImp{
         //Creamos nuestro socket
         try {
             Socket socket = new Socket(ip, puerto);
+            String ruta = path;
+            //ruta = ruta.replace("\\", "\\\\");
+            recibirArchivo(socket, ruta);
             System.out.println("Conectado al servidor: " + ip + ":" + puerto);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void recibirArchivo(Socket socket, String rutaArchivoDestino) throws IOException {
+        System.out.println("Procesando el archivo....");
+        InputStream inputStream = socket.getInputStream();
+        FileOutputStream fileOutputStream = new FileOutputStream(rutaArchivoDestino);
+
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            fileOutputStream.write(buffer, 0, bytesRead);
+        }
+
+        inputStream.close();
+        fileOutputStream.close();
+        System.out.println("Finalizo el procesando del archivo....");
+
     }
 
     public void conectarConServidores(){
@@ -121,16 +148,37 @@ public class ClienteImp{
                 e.printStackTrace();
             }
         }
-
-        //Getters y Setters
-
-        public ServerInfo getServerInfo() {
-            return serverInfo;
-        }
-
-        public void setServerInfo(ServerInfo serverInfo) {
-            this.serverInfo = serverInfo;
-        }
     }
 
+    public String getServidorIp() {
+        return servidorIp;
+    }
+
+    public void setServidorIp(String servidorIp) {
+        this.servidorIp = servidorIp;
+    }
+
+    public int getPuerto() {
+        return puerto;
+    }
+
+    public void setPuerto(int puerto) {
+        this.puerto = puerto;
+    }
+
+    public List<ServerInfo> getServerInfos() {
+        return serverInfos;
+    }
+
+    public void setServerInfos(List<ServerInfo> serverInfos) {
+        this.serverInfos = serverInfos;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

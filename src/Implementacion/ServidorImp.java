@@ -141,6 +141,9 @@ public class ServidorImp implements Runnable{
 
     private void handleClient(Socket clientSocket) {
         try {
+            enviarArchivo(clientSocket, path.concat(nombre)); // Ruta del archivo que deseas enviar
+            System.out.println("El archivo que se envio esta en: " + path.contains(nombre));
+            System.out.println("Archivo enviado al cliente...");
             // Cierre de conexiones
             clientSocket.close();
             System.out.println("Cliente desconectado.");
