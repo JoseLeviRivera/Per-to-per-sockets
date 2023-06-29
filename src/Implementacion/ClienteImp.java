@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ public class ClienteImp{
     private List<ServerInfo> serverInfos;
 
     private String path;
+
+    private CountDownLatch latch;
 
     public ClienteImp() {
         serverInfos = new ArrayList<>();
@@ -87,7 +90,7 @@ public class ClienteImp{
         }
     }
 
-    private static void recibirArchivo(Socket socket, String rutaArchivoDestino) throws IOException {
+    private synchronized void recibirArchivo(Socket socket, String rutaArchivoDestino) throws IOException {
         System.out.println("Procesando el archivo....");
         InputStream inputStream = socket.getInputStream();
         FileOutputStream fileOutputStream = new FileOutputStream(rutaArchivoDestino);
@@ -101,15 +104,49 @@ public class ClienteImp{
         inputStream.close();
         fileOutputStream.close();
         System.out.println("Finalizo el procesando del archivo....");
-
     }
 
     public void conectarConServidores(){
         System.out.println("Conectando con servidores de forma conccurrente. Tamaño de la lista: " + serverInfos.size() );
+        latch = new CountDownLatch(serverInfos.size());
+
         for (ServerInfo servidor : serverInfos) {
             Thread hilo = new Thread(new ClienteRunnable(servidor));
             hilo.start();
         }
+
+        try {
+            // Espera a que todos los hilos finalicen antes de continuar
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Descarga de archivos finalizada. Uniendo fragmentos...");
+        unirFragmentos();
+        System.out.println("Archivo final completo: " + path);
+    }
+
+    private void unirFragmentos() {
+        System.out.println("Uniendo fragmentos descargados...");
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
+            for (ServerInfo server : serverInfos) {
+                String fragmentoArchivo = server.getPath(); // Ruta del fragmento descargado
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                try (FileInputStream fileInputStream = new FileInputStream(fragmentoArchivo)) {
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        fileOutputStream.write(buffer, 0, bytesRead);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Fragmentos unidos en el archivo final: " + path);
     }
 
     public List<ServerInfo> filtrarServidoresRepetidos(List<ServerInfo> serverInfos) {
