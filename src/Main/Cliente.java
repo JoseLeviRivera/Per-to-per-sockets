@@ -3,6 +3,7 @@ package Main;
 import Implementacion.ClienteImp;
 
 //C:\tmp
+//Envio de archivos
 
 public class Cliente {
     public static void main(String[] args) {
