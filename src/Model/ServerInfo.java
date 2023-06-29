@@ -48,4 +48,14 @@ public class ServerInfo implements Serializable {
     public void setNombreArchivo(String nombreArchivo) {
         this.nombreArchivo = nombreArchivo;
     }
+
+    @Override
+    public String toString() {
+        return "ServerInfo{" +
+                "ip='" + ip + '\'' +
+                ", puerto=" + puerto +
+                ", path='" + path + '\'' +
+                ", nombreArchivo='" + nombreArchivo + '\'' +
+                '}';
+    }
 }

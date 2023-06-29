@@ -41,25 +41,45 @@ public class ServidorCentral implements Runnable{
                 );
     }
 
-    private static void handleClient(Socket clientSocket) {
+    private void handleClient(Socket clientSocket) {
         try{
-            // obtiene los output(salidas) del stream de el socket
-            OutputStream outputStream = clientSocket.getOutputStream();
-            // crea un objeto salida stream para mandar los objectos
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            System.out.println("Mandando la lista de servidores al cliente");
-            objectOutputStream.writeObject(listaServers());
+            // obtener la entrada de stream de la conexion de socket
+            InputStream inputStream = clientSocket.getInputStream();
+            // crea un DataInputStream para leer la lista de objectos
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            //Obtiene que tipo es si cliente o servidor, en caso de ser cliente le manda las lista estatica
+            //En caso de ser servidor agrega mas data
+            String tipo = (String)objectInputStream.readObject();
+            System.out.println(tipo);
+            if (tipo.equalsIgnoreCase("Cliente")){
+                // obtiene los output(salidas) del stream de el socket
+                OutputStream outputStream = clientSocket.getOutputStream();
+                // crea un objeto salida stream para mandar los objectos
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                System.out.println("Mandando la lista de servidores al cliente");
+                objectOutputStream.writeObject(obtenerListaServidores());
+            }
+            if (tipo.equalsIgnoreCase("Servidor")){
+                ServerInfo data =(ServerInfo) objectInputStream.readObject();
+                agregarServidorInfo(data);
+                System.out.println("Imprimiendo lista de servidores....");
+                obtenerListaServidores().forEach((l)-> System.out.println("ip: " + l.getIp() + " puerto: " + l.getPuerto() + " path: " + l.getPath() +  " nombre del archivo: " + l.getNombreArchivo()));
+            }
             // Cierre de conexiones
             clientSocket.close();
             System.out.println("Cliente desconectado.");
         } catch (IOException e) {
             System.out.println("Error en la comunicación con el cliente: " + e.getMessage());
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void run() {
+        //Se inicializa la lista de servidores
+        this.listaServidores = new ArrayList<>();
 
         try {
             //Cantidad de solicitudes que soporta el servidor central

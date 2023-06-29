@@ -7,9 +7,14 @@ import Implementacion.Servidor;
 public class MainServidor {
     public static void main(String[] args)  {
         if(args.length > 0 ){
-            String ip = args[0];
-            int puerto = Integer.parseInt(args[1]);
-            Servidor s = new Servidor(ip, puerto);
+            String ipServidorCentral = args[0];
+            int puertoServidorCentral = Integer.parseInt(args[1]);
+            String ipServidor = args[2];
+            int puertoServidor = Integer.parseInt(args[3]);
+            String path = args[4];
+            String nombre = args[5];
+            Servidor s = new Servidor(ipServidorCentral, puertoServidorCentral,
+                    ipServidor, puertoServidor, path, nombre);
             Thread hilo = new Thread(s);
             hilo.start();
         }
