@@ -8,14 +8,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
-public class Cliente implements Runnable{
+public class ClienteImp implements Runnable{
 
     private String servidorIp;
     private int puerto;
 
-    public Cliente(){}
+    public ClienteImp(){}
 
-    public Cliente(String servidorIp, int puerto){
+    public ClienteImp(String servidorIp, int puerto){
         this.servidorIp = servidorIp;
         this.puerto = puerto;
     }

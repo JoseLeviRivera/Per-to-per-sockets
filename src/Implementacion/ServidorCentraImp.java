@@ -9,17 +9,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServidorCentral implements Runnable{
+public class ServidorCentraImp implements Runnable{
 
     private List<ServerInfo> listaServidores;
     private String ip;
     private int port;
 
-    public ServidorCentral(){
+    public ServidorCentraImp(){
         this.listaServidores = new ArrayList<>();
     }
 
-    public ServidorCentral(String ip, int port){
+    public ServidorCentraImp(String ip, int port){
         super();
         this.ip = ip;
         this.port = port;

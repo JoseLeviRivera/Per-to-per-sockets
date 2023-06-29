@@ -1,15 +1,15 @@
 package Main;
 
-import Implementacion.ServidorCentral;
+import Implementacion.ServidorCentraImp;
 
 //ip: 192.168.1.82
 //puerto:  1234
-public class MainServidorCentral {
+public class ServidorCentral {
     public static void main(String[] args)  {
         if(args.length > 0 ){
             int puerto = Integer.parseInt(args[1]);
             String ip = args[0];
-            ServidorCentral s = new ServidorCentral(ip, puerto);
+            ServidorCentraImp s = new ServidorCentraImp(ip, puerto);
             Thread r = new Thread(s);
             r.start();
         }

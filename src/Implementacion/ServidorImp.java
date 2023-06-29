@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
-public class Servidor implements Runnable{
+public class ServidorImp implements Runnable{
     private String ipServidorCentral;
     private int puertoServidorCentral;
 
@@ -19,15 +19,15 @@ public class Servidor implements Runnable{
     private String nombre;
 
 
-    public Servidor(){}
+    public ServidorImp(){}
 
-    public Servidor(String servidorIp, int puerto){
+    public ServidorImp(String servidorIp, int puerto){
         super();
         this.ipServidorCentral = servidorIp;
         this.puertoServidorCentral = puerto;
     }
 
-    public Servidor(String servidorIp, int puerto, String ip, int port, String path, String nombre){
+    public ServidorImp(String servidorIp, int puerto, String ip, int port, String path, String nombre){
         this.ipServidorCentral = servidorIp;
         this.puertoServidorCentral = puerto;
         this.ipServidor = ip;

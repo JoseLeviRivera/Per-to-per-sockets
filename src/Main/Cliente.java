@@ -1,14 +1,13 @@
 package Main;
 
-import Implementacion.Cliente;
-import Implementacion.Servidor;
+import Implementacion.ClienteImp;
 
-public class MainCliente {
+public class Cliente {
     public static void main(String[] args) {
         if(args.length > 0 ){
             String ip = args[0];
             int puerto = Integer.parseInt(args[1]);
-            Cliente s = new Cliente(ip, puerto);
+            ClienteImp s = new ClienteImp(ip, puerto);
             Thread thread = new Thread(s);
             thread.start();
         }
