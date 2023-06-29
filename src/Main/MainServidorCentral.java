@@ -9,8 +9,9 @@ public class MainServidorCentral {
         if(args.length > 0 ){
             int puerto = Integer.parseInt(args[1]);
             String ip = args[0];
-            ServidorCentral s = new ServidorCentral();
-            s.iniciarServidor(puerto, ip);
+            ServidorCentral s = new ServidorCentral(ip, puerto);
+            Thread r = new Thread(s);
+            r.start();
         }
     }
 }

@@ -1,6 +1,8 @@
 package Model;
 
-public class ServerInfo {
+import java.io.Serializable;
+
+public class ServerInfo implements Serializable {
     private String ip;
     private int puerto;
     private String path;

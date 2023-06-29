@@ -1,28 +1,54 @@
 package Implementacion;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import Model.ServerInfo;
 
-public class Servidor {
-    public void correrServidor(String servidorIp, int puerto){
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+
+public class Servidor implements Runnable{
+
+    private String servidorIp;
+    private int puerto;
+
+    private BufferedReader entrada;
+    private DataOutputStream salida;
+
+    public Servidor(){}
+
+    public Servidor(String servidorIp, int puerto){
+        this.servidorIp = servidorIp;
+        this.puerto = puerto;
+    }
+
+    @Override
+    public void run() {
+        Socket socket;
+        DataOutputStream mensaje;
+        HashMap<String, ServerInfo> data = new HashMap<>();
         try {
-            Socket socket = new Socket(servidorIp, puerto);
-            System.out.println("Cliente conectado al servidor " + servidorIp + ":" + puerto);
-            // Obtener flujos de entrada y salida para la comunicación con el servidor
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            //Creamos nuestro socket
+            socket = new Socket(servidorIp, puerto);
+            mensaje = new DataOutputStream(socket.getOutputStream());
+            //Enviamos un mensaje
+            data.put("Servidor", null);
+            mensaje.writeUTF("Servidor");
+            Thread.sleep(1000);
+            // Enviar información al servidor central
             PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-            // Envío de mensajes al servidor
-            salida.println("Cliente[tipo]: Servidor");
-            // Lectura de respuestas del servidor
-            String respuesta = entrada.readLine();
-            System.out.println("Servidor: " + respuesta);
+            salida.println("192.168.1.2");  // IP del cliente servidor
+            salida.println(5000);           // Puerto del cliente servidor
+            salida.println("/path/al/archivo");  // Ruta del archivo en el cliente servidor
+            salida.println("archivo.dat");  // Nombre del archivo
+            //Cerramos la conexión
             socket.close();
+        } catch (UnknownHostException e) {
+            System.out.println("El host no existe o no está activo.");
         } catch (IOException e) {
-            System.out.println("Error en la comunicación con el servidor: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error de entrada/salida.");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
