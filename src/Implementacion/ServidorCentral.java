@@ -15,9 +15,6 @@ public class ServidorCentral implements Runnable{
     private String ip;
     private int port;
 
-    private BufferedReader entrada;
-    private DataOutputStream salida;
-
     public ServidorCentral(){
         this.listaServidores = new ArrayList<>();
     }
@@ -36,48 +33,22 @@ public class ServidorCentral implements Runnable{
         return listaServidores;
     }
 
-    public List<ServerInfo> listaServers(){
+    public static List<ServerInfo> listaServers(){
         return List.of(
-                new ServerInfo("12.34.564.3", 60, "asf", "afs"),
-                new ServerInfo("12.34.564.3", 60, "asf", "afs"),
+                new ServerInfo("12.34.564.1", 60, "asf", "afs"),
+                new ServerInfo("12.34.564.2", 60, "asf", "afs"),
                 new ServerInfo("12.34.564.3", 60, "asf", "afs")
                 );
     }
 
-    public void iniciarServidor(int puerto, String ip){
-        try {
-            int backlog = 1000;
-            InetAddress ipAdd = InetAddress.getByName(ip);
-
-            ServerSocket serverSocket = new ServerSocket(puerto, backlog, ipAdd);
-            System.out.println("Servidor iniciado. Esperando conexiones en el puerto " + puerto);
-
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Cliente conectado desde " + clientSocket.getInetAddress().getHostAddress());
-
-                // Crear hilos para manejar múltiples clientes de forma concurrente
-                Thread clientThread = new Thread(() -> handleClient(clientSocket));
-                clientThread.start();
-            }
-        } catch (IOException e) {
-            System.out.println("Error en el servidor: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
     private static void handleClient(Socket clientSocket) {
-        try (
-                BufferedReader entrada = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintWriter salida = new PrintWriter(clientSocket.getOutputStream(), true)
-        ) {
-            String mensaje;
-            while ((mensaje = entrada.readLine()) != null) {
-                System.out.println("Mensaje recibido: " + mensaje);
-                // Responder al cliente
-                salida.println("Hola desde Servidor!");
-            }
+        try{
+            // obtiene los output(salidas) del stream de el socket
+            OutputStream outputStream = clientSocket.getOutputStream();
+            // crea un objeto salida stream para mandar los objectos
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            System.out.println("Mandando la lista de servidores al cliente");
+            objectOutputStream.writeObject(listaServers());
             // Cierre de conexiones
             clientSocket.close();
             System.out.println("Cliente desconectado.");
@@ -89,48 +60,30 @@ public class ServidorCentral implements Runnable{
 
     @Override
     public void run() {
+
         try {
-            int backlog = 1000;
-            InetAddress ipAdd = InetAddress.getByName(this.ip);
-            ServerSocket serverSocket = new ServerSocket(port, backlog, ipAdd);
+            //Cantidad de solicitudes que soporta el servidor central
+            int max = 1000;
+            //Declaracion de la red ip, se le pasara al socket
+            InetAddress ipAdd = InetAddress.getByName(ip);
+            //Se inicaliza y se hace instancia de un servidor socket, se le pasa el puerto, max solicitudes, y la direccion ip
+            ServerSocket serverSocket = new ServerSocket(port, max, ipAdd);
             System.out.println("Servidor iniciado. Esperando conexiones en el puerto " + port);
 
+            //Bucle infinito de las solicitudes aceptadas
             while (true) {
+                //Se espera hasta que inicie un cliente
                 Socket clientSocket = serverSocket.accept();
+                //Muestra informacion detallada
                 System.out.println("Cliente conectado desde " + clientSocket.getInetAddress().getHostAddress());
-                // Para los canales de entrada y salida de datos
-                entrada = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                salida = new DataOutputStream(clientSocket.getOutputStream());
-                // Para recibir el mensaje
-                String mensajeRecibido = entrada.readLine();
-                System.out.println(mensajeRecibido);
-
-                if (mensajeRecibido.contains("Cliente")){
-                    System.out.println("Va  mandar la lista al Cliente");
-                    // Procesar la información del cliente servidor
-                    BufferedReader entrada = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    String ip = entrada.readLine();
-                    int puerto = Integer.parseInt(entrada.readLine());
-                    String path = entrada.readLine();
-                    String nombreArchivo = entrada.readLine();
-                    listaServidores.add(new ServerInfo(ip, puerto, path, nombreArchivo));
-                    System.out.println(listaServidores);
-                }
-                if (mensajeRecibido.contains("Servidor")){
-                    System.out.println("Va a agregar a la lista de servidores");
-                    /*
-                    ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-                    outputStream.writeObject(listaServers());
-                    System.out.println("Lista de objetos enviada al cliente.");
-                     */
-
-                }
-                clientSocket.close();
+                // Crear hilos para manejar múltiples clientes de forma concurrente
+                Thread clientThread = new Thread(() -> handleClient(clientSocket));
+                clientThread.start();
             }
-            // Crear hilos para manejar múltiples clientes de forma concurrente
         } catch (IOException e) {
             System.out.println("Error en el servidor: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 }
