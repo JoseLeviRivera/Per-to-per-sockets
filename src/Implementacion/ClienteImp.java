@@ -140,7 +140,7 @@ public class ClienteImp{
                 System.out.println("Conectado al servidor: " + ip);
 
                 // Realiza las operaciones de envío y recepción de datos con el servidor aquí
-
+                recibirArchivo(socket, path);
                 // Cierra la conexión cuando hayas terminado
                 socket.close();
                 System.out.println("Desconectado del servidor: " + ip);

@@ -14,9 +14,7 @@ public class Cliente {
             ClienteImp s = new ClienteImp(ip, puerto, path);
             s.peticionListaServidores();
             s.conectarConServidores();
-            s.conectarConServidor();
-            //Thread thread = new Thread(s);
-            //thread.start();
+            //s.conectarConServidor();
         }
     }
 }
