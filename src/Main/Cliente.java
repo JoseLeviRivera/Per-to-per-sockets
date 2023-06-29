@@ -8,8 +8,11 @@ public class Cliente {
             String ip = args[0];
             int puerto = Integer.parseInt(args[1]);
             ClienteImp s = new ClienteImp(ip, puerto);
-            Thread thread = new Thread(s);
-            thread.start();
+            s.peticionListaServidores();
+            s.conectarConServidores();
+            s.conectarConServidor();
+            //Thread thread = new Thread(s);
+            //thread.start();
         }
     }
 }

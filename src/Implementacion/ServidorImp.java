@@ -36,6 +36,43 @@ public class ServidorImp implements Runnable{
         this.nombre = nombre;
     }
 
+    public void obtenerInforServidor(){
+        System.out.println(this);
+    }
+
+    public void conectarServidorCentral(){
+        Socket socket;
+        try {
+            //Creamos nuestro socket
+            socket = new Socket(ipServidorCentral, puertoServidorCentral);
+
+            // obtiene los output(salidas) del stream de el socket
+            OutputStream outputStream = socket.getOutputStream();
+            // crea un objeto salida stream para mandar los objectos
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject("Servidor");
+            ServerInfo data = new ServerInfo(ipServidor, puertoServidor, path, nombre);
+            System.out.println("Mandado la data a la lista....");
+            System.out.println(data);
+            objectOutputStream.writeObject(data);
+            // obtener la entrada de stream de la conexion de socket
+            //InputStream inputStream = socket.getInputStream();
+            // crea un DataInputStream para leer la lista de objectos
+            //ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            // lee la lista de servidores del socket
+            //List<ServerInfo> list = (List<ServerInfo>) objectInputStream.readObject();
+            //System.out.println("Recibido [" + list.size() + "] servidores servidores de: " + socket);
+            // Imprime todos los servidores
+            //System.out.println("Todos los servidores en linea(*):");
+            //list.forEach((l)-> System.out.println("ip: " + l.getIp() + " puerto: " + l.getPuerto() + " path" + l.getPath() +  "nombre del archivo: " + l.getNombreArchivo()));
+            //socket.close();
+        } catch (UnknownHostException e) {
+            System.out.println("El host no existe o no está activo.");
+        } catch (IOException e) {
+            System.out.println("Error de entrada/salida.");
+            iniciarServidorCompartirArchivo();
+        }
+    }
     public void run() {
         Socket socket;
         try {
@@ -50,7 +87,7 @@ public class ServidorImp implements Runnable{
             //System.out.println("Cliente conectado: " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
             //String ipCliente = socket.getInetAddress().getHostAddress();
             //int puertoCliente = socket.getPort();
-            ServerInfo data = new ServerInfo(ipServidor, puertoServidor, "path", "nombre");
+            ServerInfo data = new ServerInfo(ipServidor, puertoServidor, path, nombre);
             System.out.println("Mandado la data a la lista....");
             System.out.println(data);
             objectOutputStream.writeObject(data);
@@ -84,7 +121,7 @@ public class ServidorImp implements Runnable{
             InetAddress ipAdd = InetAddress.getByName(ipServidor);
             //Se inicaliza y se hace instancia de un servidor socket, se le pasa el puerto, max solicitudes, y la direccion ip
             ServerSocket serverSocket = new ServerSocket(puertoServidor, max, ipAdd);
-            System.out.println("Servidor iniciado. Esperando conexiones en el puerto " + getIpServidor());
+            System.out.println("Servidor socket corriendo en " + getIpServidor() + ":" + getPuertoServidor());
 
             //Bucle infinito de las solicitudes aceptadas
             while (true) {
@@ -111,6 +148,21 @@ public class ServidorImp implements Runnable{
             System.out.println("Error en la comunicación con el cliente: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private static void enviarArchivo(Socket socket, String rutaArchivo) throws IOException {
+        File archivo = new File(rutaArchivo);
+        FileInputStream fileInputStream = new FileInputStream(archivo);
+        OutputStream outputStream = socket.getOutputStream();
+
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+
+        fileInputStream.close();
+        outputStream.close();
     }
 
     //getter y setters
@@ -162,5 +214,17 @@ public class ServidorImp implements Runnable{
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return "ServidorImp{" +
+                "ipServidorCentral='" + ipServidorCentral + '\'' +
+                ", puertoServidorCentral=" + puertoServidorCentral +
+                ", ipServidor='" + ipServidor + '\'' +
+                ", puertoServidor=" + puertoServidor +
+                ", path='" + path + '\'' +
+                ", nombre='" + nombre + '\'' +
+                '}';
     }
 }

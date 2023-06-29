@@ -33,14 +33,6 @@ public class ServidorCentraImp implements Runnable{
         return listaServidores;
     }
 
-    public static List<ServerInfo> listaServers(){
-        return List.of(
-                new ServerInfo("12.34.564.1", 60, "asf", "afs"),
-                new ServerInfo("12.34.564.2", 60, "asf", "afs"),
-                new ServerInfo("12.34.564.3", 60, "asf", "afs")
-                );
-    }
-
     private void handleClient(Socket clientSocket) {
         try{
             // obtener la entrada de stream de la conexion de socket

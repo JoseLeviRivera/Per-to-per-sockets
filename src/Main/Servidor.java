@@ -15,8 +15,10 @@ public class Servidor {
             String nombre = args[5];
             ServidorImp s = new ServidorImp(ipServidorCentral, puertoServidorCentral,
                     ipServidor, puertoServidor, path, nombre);
-            Thread hilo = new Thread(s);
-            hilo.start();
+            s.obtenerInforServidor();
+            s.conectarServidorCentral();
+           // Thread hilo = new Thread(s);
+            //hilo.start();
             s.iniciarServidorCompartirArchivo();
         }
     }
